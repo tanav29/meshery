@@ -27,6 +27,8 @@ export default function SimpleAccordion(props) {
 
   const accordionDetailsRef = React.useRef(null);
   const theme = useTheme();
+  const { canRemove = true, uiOptions, handleRemoveItem, index } = props.childProps;
+  const hasRemove = canRemove && (uiOptions?.removable ?? true) && !!handleRemoveItem;
   return (
     <Box sx={{ width: '100%', marginBottom: '0rem' }}>
       <MuiAccordion defaultExpanded elevation={0}>
@@ -48,11 +50,14 @@ export default function SimpleAccordion(props) {
             })()}{' '}
           </Typography>
 
-          {props.childProps.hasRemove && (
+          {hasRemove && (
             <IconButton
               style={{ padding: '0', ...iconSmall }}
               disabled={props.childProps.disabled || props.childProps.readonly}
-              onClick={props.childProps.onDropIndexClick(props.childProps.index)}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleRemoveItem(event, index);
+              }}
             >
               <DeleteIcon fill="gray" style={iconSmall} />
             </IconButton>

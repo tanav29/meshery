@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@sistent/sistent', () => ({
@@ -39,15 +39,16 @@ describe('SimpleAccordion', () => {
     expect(screen.getByTestId('child')).toBeInTheDocument();
   });
 
-  it('renders a delete button when hasRemove is true and invokes onDropIndexClick', () => {
-    const onDropIndexClick = vi.fn(() => vi.fn());
+  it('renders a delete button and invokes the item removal handler with its index', () => {
+    const handleRemoveItem = vi.fn();
     render(
-      <SimpleAccordion heading="thing" childProps={{ hasRemove: true, index: 2, onDropIndexClick }}>
+      <SimpleAccordion heading="thing" childProps={{ index: 2, handleRemoveItem }}>
         <div>child</div>
       </SimpleAccordion>,
     );
     expect(screen.getByTestId('delete-icon')).toBeInTheDocument();
-    expect(onDropIndexClick).toHaveBeenCalledWith(2);
+    fireEvent.click(screen.getByTestId('icon-button'));
+    expect(handleRemoveItem).toHaveBeenCalledWith(expect.anything(), 2);
   });
 
   it('returns an empty heading when title is nullish', () => {
